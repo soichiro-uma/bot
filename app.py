@@ -11,7 +11,10 @@ bucket_name = st.secrets["db_username"]
 csv_file_key = st.secrets["db_password"]
 
 # S3にアクセスするためのセッションを作成
-s3_client = boto3.client('s3')
+s3_client = boto3.client('s3',
+    aws_access_key_id= st.secrets["a"],
+    aws_secret_access_key= st.secrets["b"],
+    region_name=st.secrets["c"])
 
 # S3からCSVファイルの内容を取得
 csv_obj = s3_client.get_object(Bucket=bucket_name, Key=csv_file_key)
