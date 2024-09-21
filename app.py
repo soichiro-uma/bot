@@ -1,16 +1,56 @@
 import streamlit as st
+import boto3
+import pandas as pd
+from io import StringIO
 
-# Everything is accessible via the st.secrets dict:
+# data = pd.read_csv("20240919_all.csv",encoding='UTF-16')
 
-st.write("DB username:", st.secrets["db_username"])
-st.write("DB password:", st.secrets["db_password"])
-st.write("My cool secrets:", st.secrets["my_cool_secrets"]["things_i_like"])
+##### データ読み込み
+# S3のバケット名とCSVファイルのキー（パス）を指定
+bucket_name = '00-merge-data-box-brand-data'
+csv_file_key = 'test0.csv'
 
-# And the root-level secrets are also accessible as environment variables:
+# S3にアクセスするためのセッションを作成
+s3_client = boto3.client('s3')
 
-import os
+# S3からCSVファイルの内容を取得
+csv_obj = s3_client.get_object(Bucket=bucket_name, Key=csv_file_key)
 
-st.write(
-    "Has environment variables been set:",
-    os.environ["db_username"] == st.secrets["db_username"],
-)
+# StreamingBodyからデータを取得し、バイナリデータをUTF-16にデコード
+body = csv_obj['Body'].read().decode('UTF-16')
+
+# デコードされたデータをpandasのDataFrameに変換
+data = pd.read_csv(StringIO(body))
+
+
+##### サイドバー
+st.sidebar.title('選択してください')
+# 抽出
+top_numbers = list(range(0, 4))
+top_number = st.sidebar.selectbox("トップバイヤーの人数",top_numbers,index=3)
+category_numbers = list(range(0, 11))
+category_number = st.sidebar.selectbox("最近売れたアイテム数",category_numbers,index=10)
+categorys = ['レディース', 'メンズ', 'ビューティ','ベビーキッズ', 'ホーム', 'スポーツ']
+category = st.sidebar.selectbox("対象カテゴリ",categorys)
+
+
+countrys = ['全て', 'アメリカ', 'イギリス', 'イタリア', 'ウクライナ', 'オーストラリア',
+             'カナダ', 'ギリシャ', 'スイス', 'スペイン', 'タイ',
+            'デンマーク', 'ドイツ', 'フランス', 'ブラジル', '中国', '台湾', '日本', '韓国',"-"]
+country = st.sidebar.radio("原産国",countrys)
+
+##### メインバー
+st.title("ブランド分析")
+data = data[(data[category] == category_number) & (data['人数'] == top_number)]
+if country == '全て':
+    pass
+else:
+    data = data[data['原産国'] == country]
+
+# データをStreamlitアプリケーションに表示
+new_col = ['ブランド名', '原産国','人数','レディース', 'メンズ', 'ビューティ',
+       'ベビーキッズ', 'ホーム', 'スポーツ',  'URL', '1位', '2位', '3位', '最近レディース', '最近メンズ', '最近ビューティ',
+       '最近ベビーキッズ', '最近ホーム', '最近スポーツ']
+
+st.markdown("抽出数:" + str(len(data)))
+st.dataframe(data[new_col],hide_index=False)
