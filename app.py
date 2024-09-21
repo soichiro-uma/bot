@@ -2,13 +2,13 @@ import streamlit as st
 import boto3
 import pandas as pd
 from io import StringIO
+import datetime
 
 # data = pd.read_csv("20240919_all.csv",encoding='UTF-16')
 
 ##### データ読み込み
 # S3のバケット名とCSVファイルのキー（パス）を指定
-bucket_name = st.secrets["db_username"]
-csv_file_key = st.secrets["db_password"]
+bucket_name = st.secrets["db_backet"]
 
 # S3にアクセスするためのセッションを作成
 s3_client = boto3.client('s3',
@@ -17,6 +17,12 @@ s3_client = boto3.client('s3',
     region_name=st.secrets["c"])
 
 # S3からCSVファイルの内容を取得
+
+
+# 現在の日時を取得
+now = datetime.datetime.now()- datetime.timedelta(days=3)
+formatted_now = now.strftime("%Y%m%d")
+csv_file_key = f"{formatted_now}_all.csv"
 csv_obj = s3_client.get_object(Bucket=bucket_name, Key=csv_file_key)
 
 # StreamingBodyからデータを取得し、バイナリデータをUTF-16にデコード
