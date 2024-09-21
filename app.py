@@ -7,8 +7,8 @@ from io import StringIO
 
 ##### データ読み込み
 # S3のバケット名とCSVファイルのキー（パス）を指定
-bucket_name = '00-merge-data-box-brand-data'
-csv_file_key = 'test0.csv'
+bucket_name = st.secrets["db_username"]
+csv_file_key = st.secrets["db_password"]
 
 # S3にアクセスするためのセッションを作成
 s3_client = boto3.client('s3')
