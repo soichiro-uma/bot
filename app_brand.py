@@ -11,8 +11,7 @@ dynamodb = boto3.resource('dynamodb',
                            aws_access_key_id= st.secrets["a"],
                            aws_secret_access_key= st.secrets["b"],)
 # アクセスするテーブル名
-table_name = st.secrets["db_dynamo"]
-table = dynamodb.Table(table_name)
+table = dynamodb.Table(st.secrets["db_dynamo"])
 
 # クエリ条件などがある場合（例: プライマリキーで検索）
 def get_data_from_dynamodb(i):
@@ -33,7 +32,7 @@ def get_data_from_dynamodb(i):
 data = []
 for i in range(0,100):
     data.append(get_data_from_dynamodb(i))
-st.write(data)
+
 ### ユーザ判定
 mail = st.sidebar.text_input("メールアドレスを入れてください")
 if mail in data:
