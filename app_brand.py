@@ -6,7 +6,10 @@ import datetime
 from boto3.dynamodb.conditions import Key
 
 # AWS DynamoDBクライアントを作成
-dynamodb = boto3.resource('dynamodb', region_name=st.secrets["c"])
+dynamodb = boto3.resource('dynamodb',
+                           region_name=st.secrets["c"],
+                           aws_access_key_id= st.secrets["a"],
+                           aws_secret_access_key= st.secrets["b"],)
 # アクセスするテーブル名
 table_name = st.secrets["db_dynamo"]
 table = dynamodb.Table(table_name)
