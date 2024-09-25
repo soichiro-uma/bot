@@ -6,9 +6,9 @@ import datetime
 from boto3.dynamodb.conditions import Key
 
 # AWS DynamoDBクライアントを作成
-dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
+dynamodb = boto3.resource('dynamodb', region_name=st.secrets["c"])
 # アクセスするテーブル名
-table_name = '00_user_regist_table'
+table_name = st.secrets["db_dynamo"]
 table = dynamodb.Table(table_name)
 
 # クエリ条件などがある場合（例: プライマリキーで検索）
