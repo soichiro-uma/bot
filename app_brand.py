@@ -30,7 +30,7 @@ def get_data_from_dynamodb(i):
 data = []
 for i in range(0,100):
     data.append(get_data_from_dynamodb(i))
-
+st.write(data)
 ### ユーザ判定
 mail = st.sidebar.text_input("メールアドレスを入れてください")
 if mail in data:
